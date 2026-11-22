@@ -14,6 +14,16 @@ function openDb(file = DEFAULT_PATH) {
       forum_channel_id TEXT NOT NULL,
       role_ids         TEXT NOT NULL DEFAULT '[]'
     );
+    CREATE TABLE IF NOT EXISTS meta (
+      key   TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS api_usage (
+      api   TEXT NOT NULL,
+      day   TEXT NOT NULL,
+      count INTEGER NOT NULL DEFAULT 0,
+      PRIMARY KEY (api, day)
+    );
     CREATE TABLE IF NOT EXISTS movies (
       guild_id  TEXT NOT NULL,
       tmdb_id   INTEGER NOT NULL,
@@ -30,6 +40,18 @@ function openDb(file = DEFAULT_PATH) {
   const addMovieStmt = db.prepare('INSERT INTO movies (guild_id, tmdb_id, thread_id) VALUES (?, ?, ?)');
   const byTmdbStmt = db.prepare('SELECT * FROM movies WHERE guild_id = ? AND tmdb_id = ?');
   const byThreadStmt = db.prepare('SELECT * FROM movies WHERE thread_id = ?');
+
+  const listAllStmt = db.prepare('SELECT * FROM movies');
+  const listGuildStmt = db.prepare('SELECT * FROM movies WHERE guild_id = ?');
+  const removeStmt = db.prepare('DELETE FROM movies WHERE thread_id = ?');
+  const getMetaStmt = db.prepare('SELECT value FROM meta WHERE key = ?');
+  const setMetaStmt = db.prepare(
+    'INSERT INTO meta (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value',
+  );
+  const bumpUsageStmt = db.prepare(
+    'INSERT INTO api_usage (api, day, count) VALUES (?, ?, 1) ON CONFLICT(api, day) DO UPDATE SET count = count + 1',
+  );
+  const getUsageStmt = db.prepare('SELECT count FROM api_usage WHERE api = ? AND day = ?');
 
   const movieRow = (r) => (r ? { guildId: r.guild_id, tmdbId: r.tmdb_id, threadId: r.thread_id } : null);
 
@@ -53,6 +75,13 @@ function openDb(file = DEFAULT_PATH) {
     },
     findMovieByTmdb: (guildId, tmdbId) => movieRow(byTmdbStmt.get(guildId, tmdbId)),
     findMovieByThread: (threadId) => movieRow(byThreadStmt.get(threadId)),
+    listMovies: (guildId) => (guildId ? listGuildStmt.all(guildId) : listAllStmt.all()).map(movieRow),
+    removeMovieByThread: (threadId) => void removeStmt.run(threadId),
+    getMeta: (key) => getMetaStmt.get(key)?.value ?? null,
+    setMeta: (key, value) => void setMetaStmt.run(key, String(value)),
+    // Our own count of API requests per UTC day (the APIs do not report remaining quota).
+    recordApiCall: (api, day) => void bumpUsageStmt.run(api, day),
+    getApiUsage: (api, day) => getUsageStmt.get(api, day)?.count ?? 0,
   };
 }
 

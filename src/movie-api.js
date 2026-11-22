@@ -1,6 +1,8 @@
 // TMDB (details, runtime, poster) and OMDb (IMDb + Rotten Tomatoes ratings) clients.
 // Errors thrown here never contain the request URL, because the URL holds the API key.
 
+const { isOmdbLimitError } = require('./movie-logic');
+
 const TIMEOUT_MS = 15_000;
 
 async function getJson(url, label) {
@@ -35,11 +37,21 @@ async function getMovieDetails(tmdbId) {
   return getJson(`https://api.themoviedb.org/3/movie/${encodeURIComponent(tmdbId)}?${params}`, 'TMDB details');
 }
 
+// Called after every OMDb request so the bot can count its own usage (OMDb does not report remaining quota).
+let onOmdbRequest = () => {};
+function setOmdbRequestRecorder(fn) {
+  onOmdbRequest = fn;
+}
+
 // Raw OMDb body for an IMDb id (parse it with parseOmdbRatings). Returns null if there is no IMDb id.
+// Throws a clear error when OMDb says the daily limit is used up.
 async function getOmdb(imdbId) {
   if (!imdbId) return null;
   const params = new URLSearchParams({ apikey: requireKey('OMDB_API_KEY'), i: imdbId });
-  return getJson(`https://www.omdbapi.com/?${params}`, 'OMDb');
+  onOmdbRequest();
+  const body = await getJson(`https://www.omdbapi.com/?${params}`, 'OMDb');
+  if (isOmdbLimitError(body)) throw new Error('OMDb daily request limit reached');
+  return body;
 }
 
-module.exports = { searchMovie, getMovieDetails, getOmdb };
+module.exports = { searchMovie, getMovieDetails, getOmdb, setOmdbRequestRecorder };

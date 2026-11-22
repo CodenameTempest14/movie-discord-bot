@@ -40,6 +40,13 @@ The bot should do all of this automatically.
 Open points on F1: the poll of several search matches (choose from a dropdown when a title is ambiguous),
 duplicate check (do not post the same movie twice), and who may use it (everyone, or a role).
 
+## Added during build (owner requested, 2026-11-22)
+- **F7 `/apiusage`** (admins, Manage Server): shows OMDb requests used today against the free tier's 1,000/day.
+  OMDb does not report remaining quota (its docs state no such endpoint), so the bot counts its own requests per UTC day;
+  OMDb also does not say when its limit resets. If OMDb replies "limit reached", `/refresh` and the daily refresh stop early.
+- **Daily refresh (F6) is automatic**, checked hourly, run once per 24 hours; `/refresh` runs it on demand.
+- **`/watched` and `/unwatched`** work only inside posts the bot created (not hand-made posts).
+
 ## Phases
 | Phase | Goal | Done when |
 |-------|------|-----------|
