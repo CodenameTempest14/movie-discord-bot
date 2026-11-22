@@ -78,8 +78,12 @@ separate text channel.
   the movie must be a post the bot created.
 - **Tests first** for: choosing random To Watch posts (fixed random function), tally and tie rules, parsing `when`,
   reminder due-time check. Discord behaviour is verified by hand, with the bot running.
-- **Open points:** (1) timezone for `when` (server-wide setting, or a `tz` option?), (2) tie handling,
-  (3) Discord Scheduled Event as well as the announcement (needs the Manage Events permission), (4) poll default length.
+- **Owner decisions (2026-11-22):** (1) timezone is one per server, set in `/setup` (an IANA name such as `America/New_York`,
+  validated by the bot); (2) a tie is announced as a tie, no random pick; (3) announcement and reminder only, no Discord
+  Scheduled Event (so no Manage Events permission); (4) poll default length 24 hours (`hours` option 1-168).
+- **PC hosting:** if the bot is off when a poll ends or a reminder is due, it catches up on the next start (late
+  announcement, and a reminder is skipped with a note if the movie night has already started).
+- **Status: all open points answered; waiting for the owner's explicit go-ahead to build.**
 
 ## P07 hosting: DECIDED (owner, 2026-11-22): stay on the owner's PC for now. Revisit later.
 Ranking researched 2026-11-22 (third-party sources, they disagree; check the provider's own pages before signing up):
