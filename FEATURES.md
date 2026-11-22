@@ -58,6 +58,41 @@ duplicate check (do not post the same movie twice), and who may use it (everyone
   150 chars), the TMDB notice in the footer. TMDB's rating is shown (no OMDb calls, so no OMDb quota is used).
 - Open to everyone; replies are public like `/movie`. No storage. Not-found and API errors give a plain message.
 
+## F5 details (P06): PROPOSED, awaiting owner approval
+Owner answers (2026-11-22): poll choices come from the To Watch posts, picked randomly; poll and schedule are limited to
+Thesis-Member and Officer (plus administrators), the same roles as `/addmovie`; announcements and reminders go to a
+separate text channel.
+- **`/setup` gets one new optional option**, `announce_channel:<text channel>`, stored per server. Movie night commands
+  refuse politely until it is set. The bot needs View Channel, Send Messages and Embed Links there.
+- **`/movienight poll [count:2-5, default 4] [hours:1-168, default 24]`**: picks `count` random posts that carry the
+  `To Watch` tag (not `Coming Soon`, not `Watched`) and starts a native Discord poll in the announcement channel.
+  Fewer To Watch posts than `count` means it uses what exists (needs at least 2, otherwise it says so).
+  When the poll ends the bot announces the winner with a link to its post. A tie is announced as a tie, with a random
+  pick among the tied movies offered by a second message only if the owner wants that (open point 2).
+  Poll state (message id, end time, post ids) is stored in SQLite so a restart does not lose a poll.
+- **`/movienight schedule movie:<winner or post link> when:<YYYY-MM-DD HH:MM>`**: records the movie night and posts it in
+  the announcement channel, then posts a reminder **1 hour before** (stored in SQLite, so it survives restarts).
+  Whether it also creates a Discord Scheduled Event is open point 3.
+- **Not included:** voting on movies that are not in the forum, recurring movie nights, per-user reminders.
+- **Validation:** `count` and `hours` have min/max in the command; `when` is parsed strictly and must be in the future;
+  the movie must be a post the bot created.
+- **Tests first** for: choosing random To Watch posts (fixed random function), tally and tie rules, parsing `when`,
+  reminder due-time check. Discord behaviour is verified by hand, with the bot running.
+- **Open points:** (1) timezone for `when` (server-wide setting, or a `tz` option?), (2) tie handling,
+  (3) Discord Scheduled Event as well as the announcement (needs the Manage Events permission), (4) poll default length.
+
+## P07 hosting: PROPOSED options, owner to choose (prices not checked yet; I will read current pricing pages before you decide)
+The bot is a long-running process (a Discord connection plus a local SQLite file and timers for refresh, poll results and
+reminders). So it needs always-on hosting with a **persistent disk**; serverless and sleeping free tiers do not fit.
+| Option | Upside | Downside |
+|--------|--------|----------|
+| Stay on the owner's PC | Free, nothing to change | Bot is offline when the PC is off or asleep; reminders and poll results are missed |
+| Small VPS (a few USD/month) | Always on, full control, SQLite file just works | Monthly cost, owner must manage the server (updates, restarts) |
+| Free-tier cloud VM | Free | Signup rules and limits change; may reclaim idle instances |
+| App platform (Railway, Fly.io, etc.) | Easy deploys from GitHub | Needs a paid persistent volume for SQLite; cost varies |
+Whatever is chosen: secrets go in the host's environment settings (never in git), the bot restarts itself on a crash or reboot,
+and the SQLite file is backed up. The `.env` keys (`DISCORD_TOKEN`, `CLIENT_ID`, `GUILD_ID`, `TMDB_API_KEY`, `OMDB_API_KEY`) are moved by the owner.
+
 ## Phases
 | Phase | Goal | Done when |
 |-------|------|-----------|

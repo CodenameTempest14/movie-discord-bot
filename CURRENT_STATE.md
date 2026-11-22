@@ -34,7 +34,8 @@
   IMDb/Rotten Tomatoes lines. This matches the OMDb skip, but the `/apiusage` count was not compared before/after, so "zero OMDb requests" is not proven.
 - Real forum set up (session 2): the bot is in one server, "Software Dev`", which holds both `movie-recommendations` (real) and the old `test-movie-server` forum (owner deleted it; `/refresh` forgot its 2 posts). `/setup` on `#movie-recommendations` passed ("Tags and permissions look good").
 - Allowed roles, owner's decision: Thesis-Member and Officer (Moderator), plus server administrators. (Not Admin/Vice-Admin.)
-- Not yet verified on the real forum: `/addmovie`, then `/watched` and `/unwatched` inside the post.
+- Verified on the real forum (session 2): `/addmovie` (Monster House 2006: tag, ratings, poster, layout correct), `/watched` and `/unwatched` inside the post.
+- P06 and P07 proposals are written in FEATURES.md and wait for owner approval. Nothing built.
 
 ## Open decisions
 Real forum setup, hosting (P07), whether to rebuild links by scanning the forum, dropdown to choose between ambiguous search results.
