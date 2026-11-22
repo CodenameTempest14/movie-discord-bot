@@ -29,7 +29,8 @@
 - OMDb reports no remaining quota and no reset time; `/apiusage` counts the bot's own requests per UTC day.
 - TMDB terms: show the TMDB notice, no commercial use, do not cache TMDB data over 6 months (only IDs are stored).
 - PopCornmeter is typed by hand (optional `popcornmeter:` option); no API provides it.
-- Not yet checked in Discord: `/watched` refusing outside a movie post; the OMDb-skip for unreleased movies (committed after the last test).
+- Verified in Discord (session 2): `/watched` outside a movie post replies "Use this command inside a movie post that I created with /addmovie."
+- Not yet checked in Discord: the OMDb-skip for unreleased movies (committed after the last test).
 - Allowed roles in the test setup: Officer (Moderator), Thesis-Member (plus Administrators). Owner wanted Admin and Vice-Admin; revisit when setting up the real forum.
 
 ## Open decisions
