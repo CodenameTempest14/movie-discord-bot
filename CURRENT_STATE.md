@@ -35,7 +35,8 @@
 - Real forum set up (session 2): the bot is in one server, "Software Dev`", which holds both `movie-recommendations` (real) and the old `test-movie-server` forum (owner deleted it; `/refresh` forgot its 2 posts). `/setup` on `#movie-recommendations` passed ("Tags and permissions look good").
 - Allowed roles, owner's decision: Thesis-Member and Officer (Moderator), plus server administrators. (Not Admin/Vice-Admin.)
 - Verified on the real forum (session 2): `/addmovie` (Monster House 2006: tag, ratings, poster, layout correct), `/watched` and `/unwatched` inside the post.
-- P06 and P07 proposals are written in FEATURES.md and wait for owner approval. Nothing built.
+- P06 proposal is written in FEATURES.md and waits for owner approval (open: timezone, tie handling, Discord Scheduled Event, poll length). Nothing built.
+- P07 hosting decided: stay on the owner's PC for now (see ranking in FEATURES.md; Oracle Cloud Always Free is the first thing to try later).
 
 ## Open decisions
 Real forum setup, hosting (P07), whether to rebuild links by scanning the forum, dropdown to choose between ambiguous search results.

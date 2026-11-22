@@ -81,7 +81,14 @@ separate text channel.
 - **Open points:** (1) timezone for `when` (server-wide setting, or a `tz` option?), (2) tie handling,
   (3) Discord Scheduled Event as well as the announcement (needs the Manage Events permission), (4) poll default length.
 
-## P07 hosting: PROPOSED options, owner to choose (prices not checked yet; I will read current pricing pages before you decide)
+## P07 hosting: DECIDED (owner, 2026-11-22): stay on the owner's PC for now. Revisit later.
+Ranking researched 2026-11-22 (third-party sources, they disagree; check the provider's own pages before signing up):
+1 Oracle Cloud Always Free, 2 small paid VPS, 3 owner's PC, 4 small free bot hosts (renewals, low RAM), 5 Replit/Render free tiers
+(no persistent storage or always-on), 6 Fly.io (no free tier for new accounts). If hosting is revisited: try Oracle first, cheap VPS as the fallback.
+Consequence for P06: reminders and poll results only fire while the PC is on and the bot is running; the bot must handle
+being off at the due time (announce late, not lose it).
+
+Options considered (prices not checked):
 The bot is a long-running process (a Discord connection plus a local SQLite file and timers for refresh, poll results and
 reminders). So it needs always-on hosting with a **persistent disk**; serverless and sleeping free tiers do not fit.
 | Option | Upside | Downside |
