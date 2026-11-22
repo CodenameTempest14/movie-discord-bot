@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { Client, Events, GatewayIntentBits, MessageFlags } = require('discord.js');
+const { Agent } = require('undici');
 const loadCommands = require('./load-commands');
 
 if (!process.env.DISCORD_TOKEN) {
@@ -7,7 +8,11 @@ if (!process.env.DISCORD_TOKEN) {
   process.exit(1);
 }
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+// Discord only gives 3 seconds to answer a command. On some networks, opening a NEW connection to Discord is
+// slow (1-10s), so keep connections open for a long time and reuse them.
+const agent = new Agent({ keepAliveTimeout: 60_000, keepAliveMaxTimeout: 600_000, connect: { timeout: 10_000 } });
+
+const client = new Client({ intents: [GatewayIntentBits.Guilds], rest: { agent } });
 const commands = loadCommands();
 
 client.once(Events.ClientReady, (c) => {

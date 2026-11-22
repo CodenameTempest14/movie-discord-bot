@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
+const { rollDie } = require('../roll-logic');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -9,7 +10,7 @@ module.exports = {
     ),
   async execute(interaction) {
     const sides = interaction.options.getInteger('sides') ?? 6;
-    const result = Math.floor(Math.random() * sides) + 1;
+    const result = rollDie(sides);
     await interaction.reply(`🎲 You rolled a **${result}** (d${sides})`);
   },
 };
