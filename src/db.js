@@ -32,7 +32,18 @@ function openDb(file = DEFAULT_PATH) {
     );
   `);
 
+  // Upgrade a database made before movie night: add the new columns if they are missing (existing rows keep their data).
+  const settingsColumns = db.prepare('PRAGMA table_info(guild_settings)').all().map((c) => c.name);
+  if (!settingsColumns.includes('announce_channel_id')) db.exec('ALTER TABLE guild_settings ADD COLUMN announce_channel_id TEXT');
+  if (!settingsColumns.includes('timezone')) db.exec('ALTER TABLE guild_settings ADD COLUMN timezone TEXT');
+
   const getSettingsStmt = db.prepare('SELECT * FROM guild_settings WHERE guild_id = ?');
+  // Only fills in the values that are given (null keeps what is already stored).
+  const saveMovieNightStmt = db.prepare(`
+    UPDATE guild_settings
+    SET announce_channel_id = COALESCE(?, announce_channel_id), timezone = COALESCE(?, timezone)
+    WHERE guild_id = ?
+  `);
   const saveSettingsStmt = db.prepare(`
     INSERT INTO guild_settings (guild_id, forum_channel_id, role_ids) VALUES (?, ?, ?)
     ON CONFLICT(guild_id) DO UPDATE SET forum_channel_id = excluded.forum_channel_id, role_ids = excluded.role_ids
@@ -56,9 +67,22 @@ function openDb(file = DEFAULT_PATH) {
   const movieRow = (r) => (r ? { guildId: r.guild_id, tmdbId: r.tmdb_id, threadId: r.thread_id } : null);
 
   return {
+    close: () => db.close(),
     getSettings(guildId) {
       const r = getSettingsStmt.get(guildId);
-      return r ? { guildId: r.guild_id, forumChannelId: r.forum_channel_id, roleIds: JSON.parse(r.role_ids) } : null;
+      return r
+        ? {
+            guildId: r.guild_id,
+            forumChannelId: r.forum_channel_id,
+            roleIds: JSON.parse(r.role_ids),
+            announceChannelId: r.announce_channel_id ?? null,
+            timezone: r.timezone ?? null,
+          }
+        : null;
+    },
+    // Movie night settings. Returns false if the server has not run /setup yet (nothing to attach them to).
+    saveMovieNightSettings(guildId, { announceChannelId = null, timezone = null }) {
+      return saveMovieNightStmt.run(announceChannelId, timezone, guildId).changes > 0;
     },
     saveSettings(guildId, { forumChannelId, roleIds }) {
       saveSettingsStmt.run(guildId, forumChannelId, JSON.stringify(roleIds));

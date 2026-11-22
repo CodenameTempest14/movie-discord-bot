@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Movie Bot Guide</title>
+<style>
+  @page { size: Letter; margin: 18mm 16mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; font-size: 10.5pt; line-height: 1.5; color: #1b1c2b; margin: 0; }
+  h1 { font-size: 26pt; margin: 0 0 4px; color: #20225a; }
+  .sub { color: #5b5d7a; margin: 0 0 18px; font-size: 11.5pt; }
+  .banner { background: #20225a; color: #fff; padding: 18px 22px; border-radius: 10px; margin-bottom: 22px; }
+  .banner h1 { color: #fff; }
+  .banner .sub { color: #c9cbe8; margin: 0; }
+  h2 { font-size: 15pt; color: #20225a; border-bottom: 3px solid #ffc83d; padding-bottom: 3px; margin: 26px 0 10px; break-after: avoid; }
+  h3 { font-size: 11.5pt; margin: 16px 0 4px; color: #20225a; break-after: avoid; }
+  p { margin: 6px 0; }
+  ol, ul { margin: 6px 0 6px 22px; padding: 0; }
+  li { margin: 3px 0; }
+  code, .cmd { font-family: Consolas, "Courier New", monospace; background: #eef0fa; padding: 1px 5px; border-radius: 4px; font-size: 10pt; }
+  pre { font-family: Consolas, "Courier New", monospace; background: #15161c; color: #f4f4f8; padding: 10px 14px; border-radius: 8px; font-size: 10pt; margin: 8px 0; white-space: pre-wrap; break-inside: avoid; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 10pt; }
+  th { background: #20225a; color: #fff; text-align: left; padding: 6px 8px; }
+  td { border: 1px solid #d5d7ea; padding: 6px 8px; vertical-align: top; }
+  tr { break-inside: avoid; }
+  tr:nth-child(even) td { background: #f6f7fc; }
+  .note { background: #fff6dc; border-left: 5px solid #ffc83d; padding: 8px 12px; margin: 10px 0; border-radius: 4px; break-inside: avoid; }
+  .warn { background: #fde8ea; border-left: 5px solid #e63946; padding: 8px 12px; margin: 10px 0; border-radius: 4px; break-inside: avoid; }
+  .small { font-size: 9pt; color: #5b5d7a; }
+  .step { break-inside: avoid; }
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <h1>Movie Bot Guide</h1>
+  <p class="sub">How to turn the bot on from your PC, and how to use every command.</p>
+</div>
+
+<p>The Movie Bot looks up movies and creates the posts in your <b>#movie-recommendations</b> forum for you:
+title, IMDb and Rotten Tomatoes ratings, description, duration, poster and the status tag
+(To Watch, Watched or Coming Soon). It also suggests movies by genre or by similarity.</p>
+
+<div class="note"><b>The most important thing to know:</b> the bot only works while it is running on your PC.
+If the PC is off, asleep, or the bot window is closed, the commands answer
+<i>"The application did not respond"</i>. Part 1 shows how to start it.</div>
+
+<h2>Part 1: Turn the bot on (your PC)</h2>
+
+<h3>Start the bot</h3>
+<ol>
+  <li class="step">Open a terminal in the bot's folder. Easiest way: open the folder <code>D:\Documents\discord-bot</code> in VS Code, then choose <b>Terminal &rarr; New Terminal</b>.</li>
+  <li class="step">Type this and press Enter:
+<pre>npm start</pre></li>
+  <li class="step">Wait a few seconds until you see this line (the number of commands may be higher in the future):
+<pre>Logged in as Movie Bot#5009 with 12 commands loaded.</pre></li>
+  <li class="step">The bot is now online. <b>Leave that terminal window open.</b> You can minimise it.</li>
+</ol>
+
+<h3>Turn the bot off</h3>
+<p>Click in the terminal where the bot is running and press <code>Ctrl + C</code> (once or twice). Closing the terminal also stops it.</p>
+
+<h3>Keep it running</h3>
+<ul>
+  <li><b>Do not let the PC sleep</b> while the bot should be online. In Windows: Settings &rarr; System &rarr; Power &rarr; set <i>Screen and sleep</i> to <i>Never</i> for "When plugged in, put my device to sleep".</li>
+  <li>The bot refreshes the ratings and the Coming Soon tags by itself once a day, but only while it is running.</li>
+  <li>Run the bot <b>on one PC at a time</b>. If it runs on two PCs, both answer every command and you get duplicates or errors.</li>
+</ul>
+
+<h3>After you change anything in the code</h3>
+<ul>
+  <li><b>Restart the bot</b> (Ctrl + C, then <code>npm start</code>). The bot loads its commands only when it starts. A command added while the bot is running will not answer until you restart it.</li>
+  <li>If a command's <b>name or options</b> changed, also run this once, then restart the bot:
+<pre>npm run deploy</pre></li>
+  <li>To run the automatic tests: <code>npm test</code>.</li>
+</ul>
+
+<h3>Setting up on another PC (for example the laptop)</h3>
+<ol>
+  <li>Install Node.js (the current LTS version or newer; the desktop uses v26). The bot needs a recent Node because it uses Node's built-in SQLite.</li>
+  <li>Get the code: <code>git pull origin main</code> in the existing folder, or clone <code>github.com/CodenameTempest14/movie-discord-bot</code>.</li>
+  <li>In the folder, run <code>npm install</code>.</li>
+  <li>Create a file named <code>.env</code> (copy <code>.env.example</code>) and fill in the five values listed in Part 4. The <code>.env</code> file is never in git, so you must copy the values yourself.</li>
+  <li>Start with <code>npm start</code>.</li>
+</ol>
+<div class="warn"><b>The movie list does not travel with git.</b> The bot remembers which forum posts it created in
+<code>data\bot.sqlite</code>, and that file is not uploaded to git. A second PC starts with an empty list, so
+<code>/watched</code> would refuse posts made from the other PC. For now, use <b>one PC</b> as the bot's home.</div>
+
+<h2>Part 2: Using the bot in Discord</h2>
+<p>Type <code>/</code> in any channel and pick a command from <b>Movie Bot</b>. Options marked <i>optional</i> can be skipped.</p>
+
+<h3>Everyday commands</h3>
+<table>
+  <tr><th style="width:27%">Command</th><th>What it does</th><th style="width:20%">Who</th></tr>
+  <tr><td><code>/addmovie title [year] [popcornmeter]</code></td>
+      <td>Creates a post in the movie forum: title <i>Name (Year)</i>, IMDb rating, Rotten Tomatoes %, description, duration, poster, and the tag (<b>To Watch</b>, or <b>Coming Soon</b> if the movie is not released yet). If two movies share a title, add the <code>year</code>. <code>popcornmeter</code> is the Rotten Tomatoes audience score; no website gives it to the bot, so you type it (like <code>76%</code>) or leave it out. The bot will not post the same movie twice.</td>
+      <td>Thesis-Member, Officer, admins</td></tr>
+  <tr><td><code>/watched</code></td>
+      <td>Run it <b>inside a movie post</b>. Changes the tag to <b>Watched</b>.</td>
+      <td>Thesis-Member, Officer, admins</td></tr>
+  <tr><td><code>/unwatched</code></td>
+      <td>Run it <b>inside a movie post</b>. Moves the tag back to <b>To Watch</b> (or <b>Coming Soon</b> if not yet released).</td>
+      <td>Thesis-Member, Officer, admins</td></tr>
+  <tr><td><code>/movie title [year] [popcornmeter]</code></td>
+      <td>Shows the movie's info in the channel without creating a forum post. Good for a quick look.</td>
+      <td>Everyone</td></tr>
+  <tr><td><code>/recommend genre [genre2] [min_rating]</code></td>
+      <td>Suggests 5 popular movies in a genre. <code>genre2</code> asks for movies that match <b>both</b> genres. <code>min_rating</code> (1 to 10, default 6.5) is the lowest TMDB rating allowed. Run it again for different picks.</td>
+      <td>Everyone</td></tr>
+  <tr><td><code>/similar title [year]</code></td>
+      <td>Finds the movie, then suggests 5 movies like it.</td>
+      <td>Everyone</td></tr>
+  <tr><td><code>/refresh</code></td>
+      <td>Updates ratings and flips Coming Soon posts to To Watch after release, right now. This also happens automatically once a day.</td>
+      <td>Thesis-Member, Officer, admins</td></tr>
+</table>
+
+<p><b>Genres for /recommend:</b> Action, Adventure, Animation, Comedy, Crime, Documentary, Drama, Family, Fantasy, History,
+Horror, Music, Mystery, Romance, Science Fiction, Thriller, War, Western.</p>
+
+<div class="note"><b>Tags:</b> the forum needs three tags named <b>To Watch</b>, <b>Watched</b> and <b>Coming Soon</b>.
+Emoji, capital letters and extra spaces in the tag names are fine, and your emoji stay as they are.</div>
+
+<h3>Admin commands</h3>
+<table>
+  <tr><th style="width:27%">Command</th><th>What it does</th><th style="width:20%">Who</th></tr>
+  <tr><td><code>/setup forum role1 [role2] [announce_channel] [timezone]</code></td>
+      <td>Chooses the movie forum and which roles may use <code>/addmovie</code>, <code>/watched</code> and <code>/unwatched</code> (server admins always can). It then checks that the three tags exist and that the bot has its permissions, and lists anything missing.
+      <br>The last two options are for the upcoming movie night feature: <code>announce_channel</code> is a text channel for polls and reminders, and <code>timezone</code> is a name like <code>America/New_York</code>. You can leave them out; leaving them out keeps whatever was saved before.</td>
+      <td>Manage Server</td></tr>
+  <tr><td><code>/apiusage</code></td>
+      <td>Shows how many of OMDb's 1,000 free daily requests the bot has used today. The bot counts them itself, because OMDb does not report this.</td>
+      <td>Manage Server</td></tr>
+</table>
+
+<h3>Fun and test commands</h3>
+<table>
+  <tr><th style="width:27%">Command</th><th>What it does</th></tr>
+  <tr><td><code>/ping</code></td><td>Checks that the bot answers, and shows its delay.</td></tr>
+  <tr><td><code>/hello [user]</code></td><td>Says hello.</td></tr>
+  <tr><td><code>/roll [sides]</code></td><td>Rolls a die (6 sides unless you choose a number from 2 to 1000).</td></tr>
+</table>
+
+<h3>Adding your first movie, step by step</h3>
+<ol>
+  <li>Type <code>/addmovie</code>, fill in <code>title</code> (and <code>year</code> if needed), press Enter.</li>
+  <li>Wait a moment. The bot replies with a link to the new post in <b>#movie-recommendations</b>.</li>
+  <li>When you have watched it, open that post and type <code>/watched</code>. The tag changes.</li>
+  <li>Changed your mind? <code>/unwatched</code> inside the post.</li>
+</ol>
+<p class="small"><code>/watched</code> and <code>/unwatched</code> only work in posts the bot created. Hand-made posts are refused on purpose.</p>
+
+<h2>Part 3: If something goes wrong</h2>
+<table>
+  <tr><th style="width:36%">What you see</th><th>Why and what to do</th></tr>
+  <tr><td>"The application did not respond"</td>
+      <td>The bot is not running, or was started before the command existed. Start it with <code>npm start</code>, or restart it. Also check that the PC did not go to sleep. A slow internet connection can cause it too; try the command again.</td></tr>
+  <tr><td>"Something went wrong running that command."</td>
+      <td>The bot is running but hit an error. Look at the terminal where it runs: the error is printed there as <code>Error in /commandname</code>.</td></tr>
+  <tr><td>"Use this command inside a movie post that I created with /addmovie."</td>
+      <td>You ran <code>/watched</code> or <code>/unwatched</code> outside a bot-made post. Open the post first.</td></tr>
+  <tr><td>"I couldn't find a movie called..."</td>
+      <td>Check the spelling, or add the <code>year</code>.</td></tr>
+  <tr><td>A new movie has no IMDb or Rotten Tomatoes lines</td>
+      <td>On purpose for movies that are not released yet (this saves OMDb's daily limit). The next refresh after release fills them in. If OMDb's daily limit is used up, ratings are missing until a later refresh.</td></tr>
+  <tr><td>You cannot use <code>/addmovie</code></td>
+      <td>Your role is not on the allowed list. An admin can change it with <code>/setup</code>.</td></tr>
+  <tr><td><code>/setup</code> lists missing tags or permissions</td>
+      <td>Add the tags in the forum's settings, or give the bot Create Posts, Send Messages in Posts, Attach Files and Manage Posts in the forum channel. Then run <code>/setup</code> again.</td></tr>
+  <tr><td><code>npm start</code> says "Missing DISCORD_TOKEN"</td>
+      <td>The <code>.env</code> file is missing or empty in the bot's folder. See Part 4.</td></tr>
+</table>
+
+<h2>Part 4: Keys and safety</h2>
+<p>The <code>.env</code> file in the bot's folder holds five values. <b>Never share it, post it, or commit it to git.</b></p>
+<table>
+  <tr><th style="width:28%">Name</th><th>What it is</th></tr>
+  <tr><td><code>DISCORD_TOKEN</code></td><td>The bot's password (Discord Developer Portal &rarr; your app &rarr; Bot). If it ever leaks, reset it there right away.</td></tr>
+  <tr><td><code>CLIENT_ID</code></td><td>The app's ID (Developer Portal &rarr; General Information).</td></tr>
+  <tr><td><code>GUILD_ID</code></td><td>Your server's ID. It tells <code>npm run deploy</code> which server gets the commands.</td></tr>
+  <tr><td><code>TMDB_API_KEY</code></td><td>Free key from themoviedb.org (Settings &rarr; API). Used for movie details, posters and suggestions.</td></tr>
+  <tr><td><code>OMDB_API_KEY</code></td><td>Free key from omdbapi.com. Used for IMDb and Rotten Tomatoes ratings (1,000 requests a day).</td></tr>
+</table>
+
+<h3>Quick reference card</h3>
+<table>
+  <tr><td style="width:34%"><code>npm start</code></td><td>Turn the bot on</td></tr>
+  <tr><td><code>Ctrl + C</code></td><td>Turn the bot off (in its terminal)</td></tr>
+  <tr><td><code>npm run deploy</code></td><td>Register changed slash commands with Discord</td></tr>
+  <tr><td><code>npm test</code></td><td>Run the automatic tests</td></tr>
+  <tr><td><code>git pull origin main</code></td><td>Get the latest code (do this first when you switch PCs)</td></tr>
+</table>
+
+<p class="small" style="margin-top:22px">Movie data and posters come from TMDB, and ratings from OMDb. This application uses TMDB and the TMDB APIs but is not
+endorsed, certified, or otherwise approved by TMDB.<br>
+Guide written 2026-11-22. The movie night feature (polls and reminders) is still being built and is not covered yet.</p>
+
+</body>
+</html>

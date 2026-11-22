@@ -83,7 +83,8 @@ separate text channel.
   Scheduled Event (so no Manage Events permission); (4) poll default length 24 hours (`hours` option 1-168).
 - **PC hosting:** if the bot is off when a poll ends or a reminder is due, it catches up on the next start (late
   announcement, and a reminder is skipped with a note if the movie night has already started).
-- **Status: all open points answered; waiting for the owner's explicit go-ahead to build.**
+- **Status (end of session 2): owner approved building. Build order: step 1 `/setup` options `announce_channel` + `timezone`
+  (built, NOT yet verified in Discord), step 2 `/movienight poll`, step 3 `/movienight schedule` and the reminder.**
 
 ## P07 hosting: DECIDED (owner, 2026-11-22): stay on the owner's PC for now. Revisit later.
 Ranking researched 2026-11-22 (third-party sources, they disagree; check the provider's own pages before signing up):

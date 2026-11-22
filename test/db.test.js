@@ -12,14 +12,90 @@ test('settings: none until /setup runs', () => {
 test('settings: save and read back, including roles', () => {
   const db = fresh();
   db.saveSettings('g1', { forumChannelId: 'c1', roleIds: ['r1', 'r2'] });
-  assert.deepEqual(db.getSettings('g1'), { guildId: 'g1', forumChannelId: 'c1', roleIds: ['r1', 'r2'] });
+  assert.deepEqual(db.getSettings('g1'), {
+    guildId: 'g1',
+    forumChannelId: 'c1',
+    roleIds: ['r1', 'r2'],
+    announceChannelId: null,
+    timezone: null,
+  });
+});
+
+test('movie night settings: stored per server, other settings untouched', () => {
+  const db = fresh();
+  db.saveSettings('g1', { forumChannelId: 'c1', roleIds: ['r1'] });
+  assert.equal(db.saveMovieNightSettings('g1', { announceChannelId: 'a1', timezone: 'America/New_York' }), true);
+  assert.deepEqual(db.getSettings('g1'), {
+    guildId: 'g1',
+    forumChannelId: 'c1',
+    roleIds: ['r1'],
+    announceChannelId: 'a1',
+    timezone: 'America/New_York',
+  });
+});
+
+test('movie night settings: setting one value keeps the other', () => {
+  const db = fresh();
+  db.saveSettings('g1', { forumChannelId: 'c1', roleIds: [] });
+  db.saveMovieNightSettings('g1', { announceChannelId: 'a1' });
+  db.saveMovieNightSettings('g1', { timezone: 'Europe/London' });
+  const s = db.getSettings('g1');
+  assert.equal(s.announceChannelId, 'a1');
+  assert.equal(s.timezone, 'Europe/London');
+});
+
+test('movie night settings: saving the forum again keeps them', () => {
+  const db = fresh();
+  db.saveSettings('g1', { forumChannelId: 'c1', roleIds: [] });
+  db.saveMovieNightSettings('g1', { announceChannelId: 'a1', timezone: 'Europe/London' });
+  db.saveSettings('g1', { forumChannelId: 'c2', roleIds: ['r9'] });
+  const s = db.getSettings('g1');
+  assert.equal(s.forumChannelId, 'c2');
+  assert.equal(s.announceChannelId, 'a1');
+  assert.equal(s.timezone, 'Europe/London');
+});
+
+test('movie night settings: need /setup first (returns false when the server has no settings)', () => {
+  const db = fresh();
+  assert.equal(db.saveMovieNightSettings('g1', { timezone: 'Europe/London' }), false);
+  assert.equal(db.getSettings('g1'), null);
+});
+
+test('opening an old database (no movie night columns) upgrades it without losing data', () => {
+  const fs = require('node:fs');
+  const os = require('node:os');
+  const path = require('node:path');
+  const { DatabaseSync } = require('node:sqlite');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'botdb-'));
+  const file = path.join(dir, 'old.sqlite');
+  const old = new DatabaseSync(file);
+  old.exec(`CREATE TABLE guild_settings (guild_id TEXT PRIMARY KEY, forum_channel_id TEXT NOT NULL, role_ids TEXT NOT NULL DEFAULT '[]');
+            INSERT INTO guild_settings VALUES ('g1', 'c1', '["r1"]');`);
+  old.close();
+  const db = openDb(file);
+  assert.deepEqual(db.getSettings('g1'), {
+    guildId: 'g1',
+    forumChannelId: 'c1',
+    roleIds: ['r1'],
+    announceChannelId: null,
+    timezone: null,
+  });
+  assert.equal(db.saveMovieNightSettings('g1', { timezone: 'Europe/London' }), true);
+  db.close(); // Windows cannot delete an open SQLite file
+  fs.rmSync(dir, { recursive: true, force: true });
 });
 
 test('settings: saving again replaces the old values (upsert)', () => {
   const db = fresh();
   db.saveSettings('g1', { forumChannelId: 'c1', roleIds: ['r1'] });
   db.saveSettings('g1', { forumChannelId: 'c2', roleIds: [] });
-  assert.deepEqual(db.getSettings('g1'), { guildId: 'g1', forumChannelId: 'c2', roleIds: [] });
+  assert.deepEqual(db.getSettings('g1'), {
+    guildId: 'g1',
+    forumChannelId: 'c2',
+    roleIds: [],
+    announceChannelId: null,
+    timezone: null,
+  });
 });
 
 test('settings: servers are independent', () => {
