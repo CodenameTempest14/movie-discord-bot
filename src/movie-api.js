@@ -37,6 +37,24 @@ async function getMovieDetails(tmdbId) {
   return getJson(`https://api.themoviedb.org/3/movie/${encodeURIComponent(tmdbId)}?${params}`, 'TMDB details');
 }
 
+// First page of TMDB discover/movie for the given query parameters (see buildDiscoverParams). Returns the results array.
+async function discoverMovies(query) {
+  const params = new URLSearchParams({ api_key: requireKey('TMDB_API_KEY'), ...query });
+  const body = await getJson(`https://api.themoviedb.org/3/discover/movie?${params}`, 'TMDB discover');
+  return body?.results ?? [];
+}
+
+// TMDB "recommendations" for a movie (first page). `kind` is 'recommendations' or 'similar'.
+async function getRelatedMovies(tmdbId, kind) {
+  if (kind !== 'recommendations' && kind !== 'similar') throw new Error('Unknown related-movies kind');
+  const params = new URLSearchParams({ api_key: requireKey('TMDB_API_KEY') });
+  const body = await getJson(
+    `https://api.themoviedb.org/3/movie/${encodeURIComponent(tmdbId)}/${kind}?${params}`,
+    `TMDB ${kind}`,
+  );
+  return body?.results ?? [];
+}
+
 // Called after every OMDb request so the bot can count its own usage (OMDb does not report remaining quota).
 let onOmdbRequest = () => {};
 function setOmdbRequestRecorder(fn) {
@@ -54,4 +72,4 @@ async function getOmdb(imdbId) {
   return body;
 }
 
-module.exports = { searchMovie, getMovieDetails, getOmdb, setOmdbRequestRecorder };
+module.exports = { searchMovie, getMovieDetails, discoverMovies, getRelatedMovies, getOmdb, setOmdbRequestRecorder };

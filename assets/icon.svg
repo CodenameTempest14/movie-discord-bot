@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2b2d6e"/><stop offset="1" stop-color="#12132b"/>
+    </linearGradient>
+    <clipPath id="top"><rect x="212" y="270" width="600" height="120" rx="22"/></clipPath>
+    <clipPath id="fix"><rect x="212" y="410" width="600" height="90" rx="14"/></clipPath>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+  <circle cx="512" cy="512" r="400" fill="#ffffff" opacity="0.04"/>
+  <!-- clapper body -->
+  <rect x="212" y="410" width="600" height="380" rx="34" fill="#f4f4f8"/>
+  <g clip-path="url(#fix)">
+    <rect x="212" y="410" width="600" height="90" fill="#15161c"/>
+    <g fill="#ffc83d">
+      <polygon points="252,410 322,410 282,500 212,500"/>
+      <polygon points="392,410 462,410 422,500 352,500"/>
+      <polygon points="532,410 602,410 562,500 492,500"/>
+      <polygon points="672,410 742,410 702,500 632,500"/>
+      <polygon points="812,410 882,410 842,500 772,500"/>
+    </g>
+  </g>
+  <!-- open clapper arm -->
+  <g transform="rotate(-14 212 390)">
+    <g clip-path="url(#top)">
+      <rect x="212" y="270" width="600" height="120" fill="#15161c"/>
+      <g fill="#ffc83d">
+        <polygon points="212,270 282,270 242,390 172,390"/>
+        <polygon points="352,270 422,270 382,390 312,390"/>
+        <polygon points="492,270 562,270 522,390 452,390"/>
+        <polygon points="632,270 702,270 662,390 592,390"/>
+        <polygon points="772,270 842,270 802,390 732,390"/>
+      </g>
+    </g>
+  </g>
+  <!-- play button -->
+  <polygon points="450,570 450,730 590,650" fill="#e63946"/>
+</svg>

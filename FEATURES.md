@@ -47,6 +47,17 @@ duplicate check (do not post the same movie twice), and who may use it (everyone
 - **Daily refresh (F6) is automatic**, checked hourly, run once per 24 hours; `/refresh` runs it on demand.
 - **`/watched` and `/unwatched`** work only inside posts the bot created (not hand-made posts).
 
+## F4 details (P05, owner approved 2026-11-22; exact behaviour drafted by Claude, owner may adjust)
+- **`/recommend genre:<choice> [genre2:<choice>] [min_rating:<1-10>]`**: TMDB `discover/movie` with `with_genres`
+  (two genres = both required), `vote_average.gte` (default 6.5), `vote_count.gte` 300 (filters out obscure titles),
+  `sort_by=popularity.desc`, no adult titles. Picks 5 at random from the first page (20 results) so repeat runs vary.
+  Genres are a fixed dropdown (TMDB's genre ids), so there is no free-text input to validate.
+- **`/similar title:<text> [year]`**: finds the movie like `/movie` does, then asks TMDB `/movie/{id}/recommendations`;
+  if that is empty it falls back to `/movie/{id}/similar`. Shows the top 5, excluding the movie itself.
+- **Output (both):** one embed, one line per movie: `Title (Year) ⭐ 7.8 : short description` (description cut to
+  150 chars), the TMDB notice in the footer. TMDB's rating is shown (no OMDb calls, so no OMDb quota is used).
+- Open to everyone; replies are public like `/movie`. No storage. Not-found and API errors give a plain message.
+
 ## Phases
 | Phase | Goal | Done when |
 |-------|------|-----------|

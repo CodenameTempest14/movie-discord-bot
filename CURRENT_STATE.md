@@ -8,14 +8,19 @@
 | P02 Movie data (/movie, TMDB + OMDb) | Done | 100% |
 | P03 Forum automation (/setup, /addmovie, SQLite) | Done | 100% |
 | P04 Watched + refresh (/watched, /unwatched, /refresh, daily refresh, /apiusage) | Done | 100% |
-| P05 Recommendations (/recommend, /similar) | Not started | 0% |
+| P05 Recommendations (/recommend, /similar) | Done, verified in Discord 2026-11-22 | 100% |
 | P06 Movie night (polls, schedule, reminders) | Not started | 0% |
 | P07 Hosting | Not started | 0% |
 
 ## Where things are
 - Repo: https://github.com/CodenameTempest14/movie-discord-bot (branch `main`). Last pushed: `d9c08dc`. Local only: `c3bf3b2` (skip OMDb for unreleased movies) plus this file.
 - Bot runs from the owner's PC (`npm start`); the test forum is `test-movie-server` in the Software Dev` server. The real forum is `#movie-recommendations` (not set up yet).
-- Tests: `npm test` (55 passing). Commands are registered per guild with `npm run deploy`.
+- P05 verified in Discord (desktop, session 2): `/recommend genre:Comedy`, `genre:Horror genre2:Comedy min_rating:7`,
+  `genre:Western min_rating:10` (no-match message), `/similar title:Inception`, `/similar` with a nonsense title (not found).
+  Not checked: that two runs of the same `/recommend` give different picks (only one run was screenshotted).
+- Icon and banner source SVGs are in `assets/`; the PNGs were rendered into the session scratchpad (Controlled Folder Access
+  blocks PowerShell writes in D:\Documents) and uploaded by the owner in the Developer Portal.
+- Tests: `npm test` (72 passing). Commands are registered per guild with `npm run deploy`.
 - Secrets live only in `.env` (gitignored): DISCORD_TOKEN, CLIENT_ID, GUILD_ID, TMDB_API_KEY (32-char v3 key), OMDB_API_KEY.
 
 ## Known notes / risks
