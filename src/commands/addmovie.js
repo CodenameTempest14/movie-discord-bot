@@ -7,6 +7,7 @@ const {
   posterUrl,
   parseOmdbRatings,
   formatPostBody,
+  shouldFetchRatings,
   findTagId,
   missingTags,
 } = require('../movie-logic');
@@ -62,10 +63,12 @@ module.exports = {
     const details = await getMovieDetails(hit.id);
 
     let ratings = { imdb: null, rottenTomatoes: null };
-    try {
-      ratings = parseOmdbRatings(await getOmdb(details.imdb_id));
-    } catch (err) {
-      console.warn(`[warn] ratings unavailable: ${err.message}`);
+    if (shouldFetchRatings(details.release_date)) {
+      try {
+        ratings = parseOmdbRatings(await getOmdb(details.imdb_id));
+      } catch (err) {
+        console.warn(`[warn] ratings unavailable: ${err.message}`);
+      }
     }
 
     const body =

@@ -1,6 +1,15 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { usageSummary, isOmdbLimitError, utcDay } = require('../src/movie-logic');
+const { usageSummary, isOmdbLimitError, utcDay, shouldFetchRatings } = require('../src/movie-logic');
+
+test('shouldFetchRatings: only for movies already released (saves OMDb quota)', () => {
+  const now = new Date('2026-11-22');
+  assert.equal(shouldFetchRatings('2023-07-19', now), true);
+  assert.equal(shouldFetchRatings('2026-11-22', now), true);
+  assert.equal(shouldFetchRatings('2026-12-18', now), false);
+  assert.equal(shouldFetchRatings('', now), false);
+  assert.equal(shouldFetchRatings(null, now), false);
+});
 const { openDb } = require('../src/db');
 
 test('usageSummary: used, remaining and percent', () => {

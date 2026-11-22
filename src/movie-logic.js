@@ -125,7 +125,13 @@ function isOmdbLimitError(body) {
 // Calendar day in UTC, e.g. "2026-11-22" (OMDb does not say when its limit resets, so this is our best guess).
 const utcDay = (date = new Date()) => date.toISOString().slice(0, 10);
 
+// Unreleased movies have no ratings yet, so do not spend an OMDb request (free tier: 1,000/day) on them.
+function shouldFetchRatings(releaseDate, now = new Date()) {
+  return statusTag(releaseDate, now) === 'To Watch';
+}
+
 module.exports = {
+  shouldFetchRatings,
   STATUS_NAMES,
   usageSummary,
   isOmdbLimitError,

@@ -12,6 +12,7 @@ const {
   formatPostBody,
   parseOmdbRatings,
   postTitle,
+  shouldFetchRatings,
 } = require('./movie-logic');
 
 const UNKNOWN_CHANNEL = 10003; // Discord error code: the post was deleted
@@ -40,11 +41,13 @@ async function refreshOne(client, db, row, now = new Date()) {
 
     const details = await getMovieDetails(row.tmdbId);
     let ratings = { imdb: null, rottenTomatoes: null };
-    try {
-      ratings = parseOmdbRatings(await getOmdb(details.imdb_id));
-    } catch (err) {
-      limit = /limit reached/i.test(err.message);
-      console.warn(`[warn] refresh: ratings unavailable (${err.message})`);
+    if (shouldFetchRatings(details.release_date, now)) {
+      try {
+        ratings = parseOmdbRatings(await getOmdb(details.imdb_id));
+      } catch (err) {
+        limit = /limit reached/i.test(err.message);
+        console.warn(`[warn] refresh: ratings unavailable (${err.message})`);
+      }
     }
 
     const starter = await thread.fetchStarterMessage().catch(() => null);

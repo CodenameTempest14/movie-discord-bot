@@ -1,6 +1,13 @@
 const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
 const { searchMovie, getMovieDetails, getOmdb } = require('../movie-api');
-const { formatRuntime, postTitle, posterUrl, parseOmdbRatings, formatPostBody } = require('../movie-logic');
+const {
+  formatRuntime,
+  postTitle,
+  posterUrl,
+  parseOmdbRatings,
+  formatPostBody,
+  shouldFetchRatings,
+} = require('../movie-logic');
 
 const TMDB_NOTICE = 'This application uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.';
 
@@ -33,10 +40,12 @@ module.exports = {
 
     // Ratings are a bonus: if OMDb fails, still show the movie without them.
     let ratings = { imdb: null, rottenTomatoes: null };
-    try {
-      ratings = parseOmdbRatings(await getOmdb(details.imdb_id));
-    } catch (err) {
-      console.warn(`[warn] ratings unavailable: ${err.message}`);
+    if (shouldFetchRatings(details.release_date)) {
+      try {
+        ratings = parseOmdbRatings(await getOmdb(details.imdb_id));
+      } catch (err) {
+        console.warn(`[warn] ratings unavailable: ${err.message}`);
+      }
     }
 
     const embed = new EmbedBuilder()
