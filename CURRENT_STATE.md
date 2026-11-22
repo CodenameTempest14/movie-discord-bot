@@ -32,7 +32,9 @@
 - Verified in Discord (session 2): `/watched` outside a movie post replies "Use this command inside a movie post that I created with /addmovie."
 - Verified in Discord (session 2): `/movie Dune: Part Three` (unreleased, 2026-12-18) shows description, duration and poster with no
   IMDb/Rotten Tomatoes lines. This matches the OMDb skip, but the `/apiusage` count was not compared before/after, so "zero OMDb requests" is not proven.
-- Allowed roles in the test setup: Officer (Moderator), Thesis-Member (plus Administrators). Owner wanted Admin and Vice-Admin; revisit when setting up the real forum.
+- Real forum set up (session 2): the bot is in one server, "Software Dev`", which holds both `movie-recommendations` (real) and the old `test-movie-server` forum (owner deleted it; `/refresh` forgot its 2 posts). `/setup` on `#movie-recommendations` passed ("Tags and permissions look good").
+- Allowed roles, owner's decision: Thesis-Member and Officer (Moderator), plus server administrators. (Not Admin/Vice-Admin.)
+- Not yet verified on the real forum: `/addmovie`, then `/watched` and `/unwatched` inside the post.
 
 ## Open decisions
 Real forum setup, hosting (P07), whether to rebuild links by scanning the forum, dropdown to choose between ambiguous search results.
