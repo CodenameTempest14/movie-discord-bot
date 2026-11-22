@@ -1,6 +1,39 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { parseOmdbRatings, formatPostBody } = require('../src/movie-logic');
+const { parseOmdbRatings, formatPostBody, findTagId, missingTags } = require('../src/movie-logic');
+
+const forumTags = [
+  { id: '1', name: 'To Watch' },
+  { id: '2', name: 'Watched' },
+  { id: '3', name: 'Coming Soon' },
+];
+
+test('findTagId: finds a tag by name, ignoring case and spaces at the ends', () => {
+  assert.equal(findTagId(forumTags, 'Watched'), '2');
+  assert.equal(findTagId(forumTags, ' to watch '), '1');
+});
+
+test('findTagId: ignores emoji and extra spaces inside the tag name', () => {
+  const emojiTags = [
+    { id: '1', name: 'To Watch 🍿' },
+    { id: '2', name: '✅ Watched' },
+    { id: '3', name: 'Coming  Soon 🎥' },
+  ];
+  assert.equal(findTagId(emojiTags, 'To Watch'), '1');
+  assert.equal(findTagId(emojiTags, 'Watched'), '2');
+  assert.equal(findTagId(emojiTags, 'Coming Soon'), '3');
+  assert.deepEqual(missingTags(emojiTags), []);
+});
+
+test('findTagId: unknown tag gives null', () => {
+  assert.equal(findTagId(forumTags, 'Dropped'), null);
+  assert.equal(findTagId([], 'Watched'), null);
+});
+
+test('missingTags: lists the required tags a forum does not have', () => {
+  assert.deepEqual(missingTags(forumTags), []);
+  assert.deepEqual(missingTags([{ id: '1', name: 'To Watch' }]), ['Watched', 'Coming Soon']);
+});
 
 const omdbOppenheimer = {
   imdbRating: '8.2',

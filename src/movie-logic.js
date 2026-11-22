@@ -59,4 +59,31 @@ function formatPostBody({ imdb, rottenTomatoes, popcornmeter, description, runti
   return text.length > POST_BODY_MAX ? `${text.slice(0, POST_BODY_MAX - 3)}...` : text;
 }
 
-module.exports = { formatRuntime, postTitle, statusTag, posterUrl, parseOmdbRatings, formatPostBody };
+const REQUIRED_TAGS = ['To Watch', 'Watched', 'Coming Soon'];
+
+// Compare tag names by their words only: case, emoji, punctuation and extra spaces are ignored,
+// so "To Watch 🍿" and "to  watch" both match "To Watch".
+const tagKey = (name) => name.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+
+// Id of the forum tag with this name, or null.
+function findTagId(availableTags, name) {
+  const wanted = tagKey(name);
+  return availableTags.find((t) => tagKey(t.name) === wanted)?.id ?? null;
+}
+
+// Which of the three required tags the forum is missing.
+function missingTags(availableTags) {
+  return REQUIRED_TAGS.filter((name) => findTagId(availableTags, name) === null);
+}
+
+module.exports = {
+  formatRuntime,
+  postTitle,
+  statusTag,
+  posterUrl,
+  parseOmdbRatings,
+  formatPostBody,
+  findTagId,
+  missingTags,
+  REQUIRED_TAGS,
+};

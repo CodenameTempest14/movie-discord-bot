@@ -2,6 +2,7 @@ require('dotenv').config();
 const { Client, Events, GatewayIntentBits, MessageFlags } = require('discord.js');
 const { Agent } = require('undici');
 const loadCommands = require('./load-commands');
+const { openDb } = require('./db');
 
 if (!process.env.DISCORD_TOKEN) {
   console.error('Missing DISCORD_TOKEN. Copy .env.example to .env and fill it in.');
@@ -14,6 +15,7 @@ const agent = new Agent({ keepAliveTimeout: 60_000, keepAliveMaxTimeout: 600_000
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds], rest: { agent } });
 const commands = loadCommands();
+client.db = openDb();
 
 client.once(Events.ClientReady, (c) => {
   console.log(`Logged in as ${c.user.tag} with ${commands.size} commands loaded.`);
