@@ -30,7 +30,8 @@
 - TMDB terms: show the TMDB notice, no commercial use, do not cache TMDB data over 6 months (only IDs are stored).
 - PopCornmeter is typed by hand (optional `popcornmeter:` option); no API provides it.
 - Verified in Discord (session 2): `/watched` outside a movie post replies "Use this command inside a movie post that I created with /addmovie."
-- Not yet checked in Discord: the OMDb-skip for unreleased movies (committed after the last test).
+- Verified in Discord (session 2): `/movie Dune: Part Three` (unreleased, 2026-12-18) shows description, duration and poster with no
+  IMDb/Rotten Tomatoes lines. This matches the OMDb skip, but the `/apiusage` count was not compared before/after, so "zero OMDb requests" is not proven.
 - Allowed roles in the test setup: Officer (Moderator), Thesis-Member (plus Administrators). Owner wanted Admin and Vice-Admin; revisit when setting up the real forum.
 
 ## Open decisions
